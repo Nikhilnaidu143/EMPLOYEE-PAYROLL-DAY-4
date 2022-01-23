@@ -1,10 +1,12 @@
 package com.springboot.employeepayroll.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.services.EmployeePayrollService;
 
 @RestController
@@ -22,5 +24,10 @@ public class EmployeePayrollController {
 	@RequestMapping(value = { "", "/", "/home" }, method = RequestMethod.GET)
 	public String sayHello() {
 		return employeePayrollService.helloMessage();
+	}
+
+	@RequestMapping("/getEmp/{id}")
+	public Employee getEmployee(@PathVariable String id) {
+		return employeePayrollService.getEmployeeById(id);
 	}
 }
