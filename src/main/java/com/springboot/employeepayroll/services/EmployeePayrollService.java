@@ -37,7 +37,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 
 	/*** Updating already existing employee details. ***/
 	public Employee updateEmployeeDetails(Employee employee) {
-		Optional<Employee> findEmployee = employeePayrollRepository.findById(employee.employee_ID);
+		Optional<Employee> findEmployee = employeePayrollRepository.findById(employee.getEmployee_ID());
 		if (findEmployee.isPresent()) {
 			return employeePayrollRepository.save(employee);
 		} else {
