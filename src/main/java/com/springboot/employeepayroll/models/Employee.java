@@ -23,6 +23,14 @@ public class Employee {
 
 	}
 
+	public Employee(EmployeeDTO employeeDTO) {
+		this.employee_ID = employee_ID;
+		this.employee_name = employeeDTO.getEmployee_name();
+		this.gender = employeeDTO.getGender();
+		this.department = employeeDTO.getDepartment();
+		this.salary = employeeDTO.getSalary();
+	}
+
 	/** Parameterized constructor. **/
 	public Employee(long employee_ID, EmployeeDTO employeeDTO) {
 		this.employee_ID = employee_ID;

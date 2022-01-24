@@ -1,10 +1,12 @@
 package com.springboot.employeepayroll.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.repository.EmployeePayrollRepository;
 
@@ -19,6 +21,11 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		return "Hello Nikhil...!";
 	}
 
+	@Override
+	public List<Employee> fetchAllData() {
+		return (List<Employee>) employeePayrollRepository.findAll();
+	}
+
 	/*** get employee deatils by using employee ID . ***/
 	@Override
 	public Employee getEmployeeById(String employee_ID) {
@@ -31,15 +38,15 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 
 	/*** Creating employee deatils in the database. ***/
 	@Override
-	public Employee createEmployee(Employee employee) {
-		return employeePayrollRepository.save(employee);
+	public Employee createEmployee(EmployeeDTO employee) {
+		return employeePayrollRepository.save(new Employee(employee));
 	}
 
 	/*** Updating already existing employee details. ***/
-	public Employee updateEmployeeDetails(Employee employee) {
-		Optional<Employee> findEmployee = employeePayrollRepository.findById(employee.getEmployee_ID());
+	public Employee updateEmployeeDetails(EmployeeDTO employee, String id) {
+		Optional<Employee> findEmployee = employeePayrollRepository.findById(Long.parseLong(id));
 		if (findEmployee.isPresent()) {
-			return employeePayrollRepository.save(employee);
+			return employeePayrollRepository.save(new Employee(Long.parseLong(id), employee));
 		} else {
 			return null;
 		}
