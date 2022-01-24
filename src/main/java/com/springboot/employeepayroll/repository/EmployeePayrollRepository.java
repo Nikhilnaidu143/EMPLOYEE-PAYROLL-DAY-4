@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.springboot.employeepayroll.models.Employee;
 
-public interface EmployeePayrollRepository extends CrudRepository<Employee, Long>{
+/*** Creating interface which extends CrudRepository. ***/
+public interface EmployeePayrollRepository extends CrudRepository<Employee, Long> {
 
 }

@@ -1,10 +1,13 @@
 package com.springboot.employeepayroll.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.employeepayroll.models.Employee;
@@ -21,27 +24,31 @@ public class EmployeePayrollController {
 	@Autowired
 	private EmployeePayrollService employeePayrollService;
 
-	@RequestMapping(value = { "", "/", "/home" }, method = RequestMethod.GET)
+	@GetMapping(value = { "", "/", "/home" })
 	public String sayHello() {
 		return employeePayrollService.helloMessage();
 	}
 
-	@RequestMapping(value = "/get/{emp_id}", method = RequestMethod.GET)
+	/*** get employee deatils by using employee ID . ***/
+	@GetMapping(value = "/get/{emp_id}")
 	public Employee getEmployee(@PathVariable String emp_id) {
 		return employeePayrollService.getEmployeeById(emp_id);
 	}
-	
-	@RequestMapping(value = "/post", method = RequestMethod.POST)
+
+	/*** Creating employee deatils in the database. ***/
+	@PostMapping(value = "/post")
 	public Employee getEmployee(@RequestBody Employee employee) {
 		return employeePayrollService.createEmployee(employee);
 	}
-	
-	@RequestMapping(value = "/update" , method = RequestMethod.PUT)
-	public Employee updateEmployee(@RequestBody Employee employee) {
+
+	/*** Updating already existing employee details. ***/
+	@PutMapping("/update")
+	public Employee updateEmployeeByID(@RequestBody Employee employee) {
 		return employeePayrollService.updateEmployeeDetails(employee);
 	}
-	
-	@RequestMapping(value = "/delete/{emp_id}" , method = RequestMethod.DELETE)
+
+	/*** Delete employee deatils by using employee ID. ***/
+	@DeleteMapping(value = "/delete/{emp_id}")
 	public String deleteEmployee(@PathVariable String emp_id) {
 		return employeePayrollService.deleteEmployeeFromDB(emp_id);
 	}
