@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.springboot.employeepayroll.dto.EmployeeDTO;
+import com.springboot.employeepayroll.exceptions.EmployeePayrollException;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.repository.EmployeePayrollRepository;
 
@@ -30,10 +31,12 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	@Override
 	public Employee getEmployeeById(String employee_ID) {
 		Optional<Employee> employee = employeePayrollRepository.findById(Long.parseLong(employee_ID));
-		if (employee.isPresent()) {
+		if(!employee.isPresent()) {
+			throw new EmployeePayrollException("ID not found...!");
+		}
+		else {
 			return employee.get();
 		}
-		return null;
 	}
 
 	/*** Creating employee deatils in the database. ***/
