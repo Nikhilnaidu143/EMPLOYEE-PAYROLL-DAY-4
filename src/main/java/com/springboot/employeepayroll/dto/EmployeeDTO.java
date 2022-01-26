@@ -12,12 +12,12 @@ public @Data class EmployeeDTO {
 	 * UC-4.1:- Add Validation to Name Field so the REST call can be validated.
 	 ***/
 
-	@NotEmpty
+	@NotEmpty(message = "Name cannot be null..!")
 	@Pattern(regexp = "^[A-Z]{1}[a-zA-Z\\s]{2,}$", message = "Name validation failed..!")
 	private String employee_name;
-	@NotEmpty
+	@NotEmpty(message = "Gender cannot be null..!")
 	private String gender;
-	@NotEmpty
+	@NotEmpty(message = "Department cannot be null..!")
 	private String department;
 	@Min(value = 1000, message = "Salary must be greater than 1000.")
 	private long salary;
