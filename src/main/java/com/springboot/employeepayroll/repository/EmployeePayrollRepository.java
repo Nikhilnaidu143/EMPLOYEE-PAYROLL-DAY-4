@@ -1,10 +1,10 @@
 package com.springboot.employeepayroll.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.springboot.employeepayroll.models.Employee;
 
-/*** Creating interface which extends CrudRepository. ***/
-public interface EmployeePayrollRepository extends CrudRepository<Employee, Long> {
+/*** Creating interface which extends JpaRepository. ***/
+public interface EmployeePayrollRepository extends JpaRepository<Employee, Long> {
 
 }

@@ -38,7 +38,6 @@ public class EmployeePayrollExceptionHandler {
 	@ExceptionHandler(EmployeePayrollException.class)
 	public ResponseEntity<ResponseDTO> handleAddressBookException(EmployeePayrollException exception) {
 		ResponseDTO responseDTO = new ResponseDTO(MESSAGE, exception.getMessage());
-		;
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.BAD_REQUEST);
 	}
 
