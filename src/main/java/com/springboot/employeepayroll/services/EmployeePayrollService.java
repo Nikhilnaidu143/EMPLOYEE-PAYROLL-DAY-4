@@ -18,10 +18,12 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	@Autowired
 	private EmployeePayrollRepository employeePayrollRepository;
 
+	/*** Simple hello message to check. ***/
 	public String helloMessage() {
 		return "Hello Nikhil...!";
 	}
 
+	/*** Get All Employee Deatils. ***/
 	@Override
 	public List<Employee> fetchAllData() {
 		return (List<Employee>) employeePayrollRepository.findAll();
@@ -48,10 +50,10 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	/*** Updating already existing employee details. ***/
 	public Employee updateEmployeeDetails(EmployeeDTO employee, String id) {
 		Optional<Employee> findEmployee = employeePayrollRepository.findById(Long.parseLong(id));
-		if (findEmployee.isPresent()) {
-			return employeePayrollRepository.save(new Employee(Long.parseLong(id), employee));
+		if (!findEmployee.isPresent()) {
+			throw new EmployeePayrollException("ID not found...!");
 		} else {
-			return null;
+			return employeePayrollRepository.save(new Employee(Long.parseLong(id), employee));
 		}
 	}
 

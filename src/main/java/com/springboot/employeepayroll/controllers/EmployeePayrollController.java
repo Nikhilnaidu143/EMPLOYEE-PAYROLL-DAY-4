@@ -21,8 +21,11 @@ import com.springboot.employeepayroll.dto.ResponseDTO;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.services.EmployeePayrollService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/payroll")
+@Slf4j
 public class EmployeePayrollController {
 
 	/***
@@ -31,9 +34,10 @@ public class EmployeePayrollController {
 	 * ----> Introducing Services Layer in Employee Payroll App.
 	 ***/
 
-	@Autowired
+	@Autowired // Autowired annotation is used for automatic injection.
 	private EmployeePayrollService employeePayrollService;
 
+	/*** Simple hello message for checking. ***/
 	@GetMapping(value = { "", "/", "/home" })
 	public ResponseEntity<ResponseDTO> sayHello() {
 		String mssg = employeePayrollService.helloMessage();
@@ -41,6 +45,7 @@ public class EmployeePayrollController {
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
+	/*** get All employee deatils . ***/
 	@GetMapping(value = "/getAll")
 	public ResponseEntity<ResponseDTO> fetchAllEmployersData() {
 		List<Employee> allEmpData = employeePayrollService.fetchAllData();
@@ -59,6 +64,7 @@ public class EmployeePayrollController {
 	/*** Creating employee deatils in the database. ***/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseDTO> getEmployee(@Valid @RequestBody EmployeeDTO employee) {
+		log.info("Employee DTO :- " + employee.toString()); // logging.
 		Employee employeeData = employeePayrollService.createEmployee(employee);
 		ResponseDTO responseDTO = new ResponseDTO("Post Call for employee successfull..!", employeeData);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
@@ -66,7 +72,8 @@ public class EmployeePayrollController {
 
 	/*** Updating already existing employee details. ***/
 	@PutMapping("/update/{id}")
-	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee, @PathVariable String id) {
+	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee,
+			@PathVariable String id) {
 		Employee employeeData = employeePayrollService.updateEmployeeDetails(employee, id);
 		ResponseDTO responseDTO = new ResponseDTO("Put Call for employee successfull..!", employeeData);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
