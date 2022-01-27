@@ -22,6 +22,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	private EmployeePayrollRepository employeePayrollRepository;
 
 	/*** Simple hello message to check. ***/
+	@Override
 	public String helloMessage() {
 		return "Hello Nikhil...!";
 	}
@@ -32,16 +33,17 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		return (List<Employee>) employeePayrollRepository.findAll();
 	}
 
-	/*** get employee deatils by using employee ID . ***/
+	/*** get employee deatils by using employee ID. ***/
 	@Override
-	public Employee getEmployeeById(String employee_ID) {
-		Optional<Employee> employee = employeePayrollRepository.findById(Long.parseLong(employee_ID));
-		if(!employee.isPresent()) {
-			throw new EmployeePayrollException("ID not found...!");
-		}
-		else {
-			return employee.get();
-		}
+	public Employee getEmployeeById(String employee_id) {
+		return employeePayrollRepository.findById(Long.parseLong(employee_id))
+				.orElseThrow(() -> new EmployeePayrollException("ID not found...!"));
+	}
+	
+	/*** Get employees details by using department. ***/
+	@Override
+	public List<Employee> getEmployeesByDepartment(String department) {
+		return employeePayrollRepository.findEmployeesByDepartment(department);
 	}
 
 	/*** Creating employee deatils in the database. ***/

@@ -36,15 +36,15 @@ public @ToString class EmployeeDTO {
 	@NotNull(message = "Start date cannot be null...!")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@PastOrPresent(message = "Start date cannot be future date...!")
-	public LocalDate startDate;
+	public LocalDate start_date;
 	
 	@NotNull(message = "Note cannot be null..!")
 	public String note;
 	
 	@NotNull(message = "Profile Picture cannot be null..!")
-	public String profilePic;
+	public String profile_pic;
 
-	@NotNull(message = "Departments cannot be null...!")
-	@NotEmpty(message = "Departments cannot be empty...!")
-	public List<String> departments; // list of departments.
+	@NotNull(message = "Department cannot be null...!")
+	@NotEmpty(message = "Department cannot be empty...!")
+	public List<String> department; // list of departments.
 }

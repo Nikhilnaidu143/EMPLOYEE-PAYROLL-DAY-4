@@ -61,6 +61,14 @@ public class EmployeePayrollController {
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
+	/*** get employee details by usinf department. ***/
+	@GetMapping(value = "department/{department}")
+	public ResponseEntity<ResponseDTO> getEmployeeByDepartment(@PathVariable String department) {
+		List<Employee> empData = employeePayrollService.getEmployeesByDepartment(department);
+		ResponseDTO responseDTO = new ResponseDTO("Get By Department Call Successfull.", empData);
+		return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
+	}
+	
 	/*** Creating employee deatils in the database. ***/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseDTO> getEmployee(@Valid @RequestBody EmployeeDTO employee) {

@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import com.springboot.employeepayroll.dto.EmployeeDTO;
 
@@ -19,49 +20,50 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@Table(name = "employee_payroll")
 public @Data class Employee {
 
 	/*** UC-5.1:- Add remaining properties to the Payroll DTO and Model. ***/
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "employee_ID")
-	private long employee_ID;
+	@Column(name = "employee_id")
+	private long employee_id;
 
 	@Column(name = "name")
 	private String employee_name;
 	private String gender;
 	private long salary;
-	private LocalDate startDate;
+	private LocalDate start_date;
 	private String note;
-	private String profilePic;
+	private String profile_pic;
 
 	@ElementCollection
 	@CollectionTable(name = "employee_department", joinColumns = @JoinColumn(name = "id")) // joining tables by using
 																							// ID.
-	@Column(name = "departments")
-	private List<String> departments;
+	@Column(name = "department")
+	private List<String> department;
 
 	/*** Parameterized constructor. ***/
 	public Employee(EmployeeDTO employeeDTO) {
 		this.employee_name = employeeDTO.employee_name;
 		this.gender = employeeDTO.gender;
 		this.salary = employeeDTO.salary;
-		this.startDate = employeeDTO.startDate;
+		this.start_date = employeeDTO.start_date;
 		this.note = employeeDTO.note;
-		this.profilePic = employeeDTO.profilePic;
-		this.departments = employeeDTO.departments;
+		this.profile_pic = employeeDTO.profile_pic;
+		this.department = employeeDTO.department;
 	}
 
 	/** Parameterized constructor(Constructor Overloading). **/
-	public Employee(long employee_ID, EmployeeDTO employeeDTO) {
-		this.employee_ID = employee_ID;
+	public Employee(long employee_id, EmployeeDTO employeeDTO) {
+		this.employee_id = employee_id;
 		this.employee_name = employeeDTO.employee_name;
 		this.gender = employeeDTO.gender;
 		this.salary = employeeDTO.salary;
-		this.startDate = employeeDTO.startDate;
+		this.start_date = employeeDTO.start_date;
 		this.note = employeeDTO.note;
-		this.profilePic = employeeDTO.profilePic;
-		this.departments = employeeDTO.departments;
+		this.profile_pic = employeeDTO.profile_pic;
+		this.department = employeeDTO.department;
 	}
 }
