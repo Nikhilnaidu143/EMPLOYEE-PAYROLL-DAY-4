@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -17,25 +19,32 @@ public @ToString class EmployeeDTO {
 	 * UC-4.1:- Add Validation to Name Field so the REST call can be validated.
 	 ***/
 
-	@NotEmpty(message = "Name cannot be null..!")
+	/*** UC-5.2:- Ensure validations is done on the Payroll DTO. ***/
+	
+	@NotNull(message = "Name cannot be null...!")
 	@Pattern(regexp = "^[A-Z]{1}[a-zA-Z\\s]{2,}$", message = "Name validation failed..!")
 	public String employee_name;
 	
-	@NotEmpty(message = "Gender cannot be null..!")
+	@NotNull(message = "Gender cannot be null..!")
+	@Pattern(regexp = "male|female|Male|Female" , message = "Please enter either 'male' or 'female'...!")
 	public String gender;
 
 	@Min(value = 1000, message = "Salary must be greater than 1000.")
+	@NotNull(message = "salary cannot be null...!")
 	public long salary;
 
+	@NotNull(message = "Start date cannot be null...!")
 	@JsonFormat(pattern = "yyyy-MM-dd")
+	@PastOrPresent(message = "Start date cannot be future date...!")
 	public LocalDate startDate;
 	
-	@NotEmpty(message = "Note cannot be null..!")
+	@NotNull(message = "Note cannot be null..!")
 	public String note;
 	
-	@NotEmpty(message = "Profile Picture cannot be null..!")
+	@NotNull(message = "Profile Picture cannot be null..!")
 	public String profilePic;
 
-	@NotEmpty(message = "Departments cannot be null...!")
+	@NotNull(message = "Departments cannot be null...!")
+	@NotEmpty(message = "Departments cannot be empty...!")
 	public List<String> departments; // list of departments.
 }

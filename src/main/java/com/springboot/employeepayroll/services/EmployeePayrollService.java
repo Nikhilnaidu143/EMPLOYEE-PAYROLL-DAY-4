@@ -11,7 +11,10 @@ import com.springboot.employeepayroll.exceptions.EmployeePayrollException;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.repository.EmployeePayrollRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EmployeePayrollService implements IEmployeePayrollService {
 
 	/*** Autowired annotation is used for automatic dependency injection. ***/
@@ -51,6 +54,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	public Employee updateEmployeeDetails(EmployeeDTO employee, String id) {
 		Optional<Employee> findEmployee = employeePayrollRepository.findById(Long.parseLong(id));
 		if (!findEmployee.isPresent()) {
+			log.error("OOPS! Id not found in the database...!");
 			throw new EmployeePayrollException("ID not found...!");
 		} else {
 			return employeePayrollRepository.save(new Employee(Long.parseLong(id), employee));
