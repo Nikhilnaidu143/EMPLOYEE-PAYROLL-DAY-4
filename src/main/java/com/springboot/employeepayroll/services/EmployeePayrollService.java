@@ -10,6 +10,7 @@ import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.exceptions.EmployeePayrollException;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.repository.EmployeePayrollRepository;
+import com.springboot.employeepayroll.util.TokenUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,30 +21,61 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	/*** Autowired annotation is used for automatic dependency injection. ***/
 	@Autowired
 	private EmployeePayrollRepository employeePayrollRepository;
-
+	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
 	/*** Simple hello message to check. ***/
 	@Override
-	public String helloMessage() {
-		return "Hello Nikhil...!";
+	public String helloMessage(String token) {
+		Long tokenId = tokenUtil.decodeToken(token);
+		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
+		if(employeeByToken.isPresent()) {
+			return "Hello Nikhil...!";
+		}
+		else {
+			return null;
+		}
 	}
 
-	/*** Get All Employee Deatils. ***/
+	/*** Get All Employee Details. ***/
 	@Override
-	public List<Employee> fetchAllData() {
-		return (List<Employee>) employeePayrollRepository.findAll();
+	public List<Employee> fetchAllData(String token) {
+		Long id = tokenUtil.decodeToken(token);
+		Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
+		if(!findEmployee.isPresent()) {
+			throw new EmployeePayrollException("Token is not valid...!");
+		}
+		else {
+			return (List<Employee>) employeePayrollRepository.findAll();
+		}
 	}
-
-	/*** get employee deatils by using employee ID. ***/
+	
+	/*** get employee details by using employee ID. ***/
 	@Override
-	public Employee getEmployeeById(String employee_id) {
-		return employeePayrollRepository.findById(Long.parseLong(employee_id))
-				.orElseThrow(() -> new EmployeePayrollException("ID not found...!"));
+	public Employee getEmployeeById(String token , Long id) {
+		Long tokenId = tokenUtil.decodeToken(token);   //decoding token and getting id.
+		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
+		if(employeeByToken.isPresent()) {
+			return employeePayrollRepository.findById(id)
+					.orElseThrow(() -> new EmployeePayrollException("ID not found...!"));
+		}
+		else {
+			return null;
+		}
 	}
 	
 	/*** Get employees details by using department. ***/
 	@Override
-	public List<Employee> getEmployeesByDepartment(String department) {
-		return employeePayrollRepository.findEmployeesByDepartment(department);
+	public List<Employee> getEmployeesByDepartment(String department , String token) {
+		Long id = tokenUtil.decodeToken(token);
+		Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
+		if(!findEmployee.isPresent()) {
+			throw new EmployeePayrollException("Token is not valid...!");
+		}
+		else {
+			return employeePayrollRepository.findEmployeesByDepartment(department);
+		}
 	}
 
 	/*** Creating employee deatils in the database. ***/
@@ -53,25 +85,38 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	}
 
 	/*** Updating already existing employee details. ***/
-	public Employee updateEmployeeDetails(EmployeeDTO employee, String id) {
-		Optional<Employee> findEmployee = employeePayrollRepository.findById(Long.parseLong(id));
-		if (!findEmployee.isPresent()) {
-			log.error("OOPS! Id not found in the database...!");
-			throw new EmployeePayrollException("ID not found...!");
-		} else {
-			return employeePayrollRepository.save(new Employee(Long.parseLong(id), employee));
+	public Employee updateEmployeeDetails(EmployeeDTO employee, String token, Long id) {
+		Long tokenId = tokenUtil.decodeToken(token);
+		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
+		if(employeeByToken.isPresent()) {
+			Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
+			if (!findEmployee.isPresent()) {
+				log.error("OOPS! Id not found in the database...!");
+				throw new EmployeePayrollException("ID not found...!");
+			} else {
+				return employeePayrollRepository.save(new Employee(id , employee));
+			}
+		}
+		else {
+			return null;
 		}
 	}
 
 	/*** Delete employee deatils by using employee ID. ***/
 	@Override
-	public String deleteEmployeeFromDB(String emp_id) {
-		Optional<Employee> employee = employeePayrollRepository.findById(Long.parseLong(emp_id));
-		if (employee.isPresent()) {
-			employeePayrollRepository.deleteById(Long.parseLong(emp_id));
-			return "Deleted employee details successfully";
-		} else {
-			return "Employee is not there in database.";
+	public String deleteEmployeeFromDB(String token , Long id) {
+		Long tokenId = tokenUtil.decodeToken(token);
+		Optional<Employee> employee = employeePayrollRepository.findById(tokenId);
+		if(employee.isPresent()) {
+			Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
+			if (findEmployee.isPresent()) {
+				employeePayrollRepository.deleteById(id);
+				return "Deleted employee details successfully";
+			} else {
+				return "Employee is not there in database.";
+			}
+		}else {
+			return null;
 		}
 	}
 }

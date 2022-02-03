@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.dto.ResponseDTO;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.services.EmployeePayrollService;
+import com.springboot.employeepayroll.util.TokenUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,36 +38,40 @@ public class EmployeePayrollController {
 
 	@Autowired // Autowired annotation is used for automatic injection.
 	private EmployeePayrollService employeePayrollService;
-
+	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
 	/*** Simple hello message for checking. ***/
 	@GetMapping(value = { "", "/", "/home" })
-	public ResponseEntity<ResponseDTO> sayHello() {
-		String mssg = employeePayrollService.helloMessage();
-		ResponseDTO responseDTO = new ResponseDTO("Get Call successfull.", mssg);
+	public ResponseEntity<ResponseDTO> sayHello(@RequestParam(value = "token") String token) {
+		String mssg = employeePayrollService.helloMessage(token);
+		ResponseDTO responseDTO = new ResponseDTO("Get Call successfull.", mssg, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
-	/*** get All employee deatils . ***/
+	/*** get All employee details . ***/
 	@GetMapping(value = "/getAll")
-	public ResponseEntity<ResponseDTO> fetchAllEmployersData() {
-		List<Employee> allEmpData = employeePayrollService.fetchAllData();
-		ResponseDTO responseDTO = new ResponseDTO("Get All data Call successfull.", allEmpData);
+	public ResponseEntity<ResponseDTO> fetchAllEmployersData(@RequestParam(value = "token") String token) {
+		List<Employee> allEmpData = employeePayrollService.fetchAllData(token);
+		ResponseDTO responseDTO = new ResponseDTO("Get All data Call successfull.", allEmpData , token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
-	/*** get employee deatils by using employee ID . ***/
-	@GetMapping(value = "/get/{emp_id}")
-	public ResponseEntity<ResponseDTO> getEmployee(@PathVariable String emp_id) {
-		Employee employee = employeePayrollService.getEmployeeById(emp_id);
-		ResponseDTO responseDTO = new ResponseDTO("Get Call for ID successfull..!", employee);
+	/*** get employee details by using employee ID . ***/
+	@GetMapping(value = "/get/{id}")
+	public ResponseEntity<ResponseDTO> getEmployee(@RequestParam(value = "token") String token, @PathVariable Long id) {
+		Employee employee = employeePayrollService.getEmployeeById(token , id);
+		ResponseDTO responseDTO = new ResponseDTO("Get Call for ID successfull..!", employee , token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
-	/*** get employee details by usinf department. ***/
+	/*** get employee details by using department. ***/
 	@GetMapping(value = "department/{department}")
-	public ResponseEntity<ResponseDTO> getEmployeeByDepartment(@PathVariable String department) {
-		List<Employee> empData = employeePayrollService.getEmployeesByDepartment(department);
-		ResponseDTO responseDTO = new ResponseDTO("Get By Department Call Successfull.", empData);
+	public ResponseEntity<ResponseDTO> getEmployeeByDepartment(@PathVariable String department , 
+			@RequestParam(value = "token") String token) {
+		List<Employee> empData = employeePayrollService.getEmployeesByDepartment(department , token);
+		ResponseDTO responseDTO = new ResponseDTO("Get By Department Call Successfull.", empData , token);
 		return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
 	}
 	
@@ -74,24 +80,25 @@ public class EmployeePayrollController {
 	public ResponseEntity<ResponseDTO> getEmployee(@Valid @RequestBody EmployeeDTO employee) {
 		log.info("Employee DTO :- " + employee.toString()); // logging.
 		Employee employeeData = employeePayrollService.createEmployee(employee);
-		ResponseDTO responseDTO = new ResponseDTO("Post Call for employee successfull..!", employeeData);
+		String token = tokenUtil.createToken(employeeData.getEmployee_id());
+		ResponseDTO responseDTO = new ResponseDTO("Post Call for employee successfull..!", employeeData, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	/*** Updating already existing employee details. ***/
 	@PutMapping("/update/{id}")
-	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee,
-			@PathVariable String id) {
-		Employee employeeData = employeePayrollService.updateEmployeeDetails(employee, id);
-		ResponseDTO responseDTO = new ResponseDTO("Put Call for employee successfull..!", employeeData);
+	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee , 
+	    @RequestParam(value = "token") String token , @PathVariable Long id) {
+		Employee employeeData = employeePayrollService.updateEmployeeDetails(employee, token, id);
+		ResponseDTO responseDTO = new ResponseDTO("Put Call for employee successfull..!", employeeData , token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
-	/*** Delete employee deatils by using employee ID. ***/
-	@DeleteMapping(value = "/delete/{emp_id}")
-	public ResponseEntity<ResponseDTO> deleteEmployee(@PathVariable String emp_id) {
-		String employee = employeePayrollService.deleteEmployeeFromDB(emp_id);
-		ResponseDTO responseDTO = new ResponseDTO("Delete Call for employee successfull..!", employee);
+	/*** Delete employee details by using employee ID. ***/
+	@DeleteMapping(value = "/delete/{id}")
+	public ResponseEntity<ResponseDTO> deleteEmployee(@RequestParam(value = "token") String token , @PathVariable Long id) {
+		String employee = employeePayrollService.deleteEmployeeFromDB(token , id);
+		ResponseDTO responseDTO = new ResponseDTO("Delete Call for employee successfull..!", employee , token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 }
