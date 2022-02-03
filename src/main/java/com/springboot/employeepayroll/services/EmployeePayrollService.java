@@ -85,6 +85,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 	}
 
 	/*** Updating already existing employee details. ***/
+	@Override
 	public Employee updateEmployeeDetails(EmployeeDTO employee, String token, Long id) {
 		Long tokenId = tokenUtil.decodeToken(token);
 		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
