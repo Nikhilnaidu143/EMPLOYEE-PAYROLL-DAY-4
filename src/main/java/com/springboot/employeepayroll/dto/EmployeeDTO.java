@@ -3,6 +3,7 @@ package com.springboot.employeepayroll.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -44,6 +45,9 @@ public @ToString class EmployeeDTO {
 	@NotNull(message = "Profile Picture cannot be null..!")
 	public String profile_pic;
 
+	@Email(regexp = "^[\\w+-]+(\\.[\\w+-]+)*@[\\w]+(\\.[\\w]+)?(?=(\\.[A-Za-z_]{2,3}$|\\.[a-zA-Z]{2,3}$)).*$" , message = "Email validation failed...!")
+	public String email;
+	
 	@NotNull(message = "Department cannot be null...!")
 	@NotEmpty(message = "Department cannot be empty...!")
 	public List<String> department; // list of departments.

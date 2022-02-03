@@ -22,5 +22,7 @@ public interface IEmployeePayrollService {
 	public Employee updateEmployeeDetails(EmployeeDTO employee, String token, Long id);
 
 	public String deleteEmployeeFromDB(String token , Long id);
+	
+	public Employee EmployeeVerification(String token);
 
 }

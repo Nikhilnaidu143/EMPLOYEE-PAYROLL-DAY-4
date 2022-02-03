@@ -21,6 +21,7 @@ import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.dto.ResponseDTO;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.services.EmployeePayrollService;
+import com.springboot.employeepayroll.services.IMailService;
 import com.springboot.employeepayroll.util.TokenUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class EmployeePayrollController {
 	
 	@Autowired
 	private TokenUtil tokenUtil;
+	
+	@Autowired
+	private IMailService mailService;
 	
 	/*** Simple hello message for checking. ***/
 	@GetMapping(value = { "", "/", "/home" })
@@ -75,12 +79,14 @@ public class EmployeePayrollController {
 		return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
 	}
 	
-	/*** Creating employee deatils in the database. ***/
+	/*** Creating employee details in the database. ***/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseDTO> getEmployee(@Valid @RequestBody EmployeeDTO employee) {
 		log.info("Employee DTO :- " + employee.toString()); // logging.
 		Employee employeeData = employeePayrollService.createEmployee(employee);
 		String token = tokenUtil.createToken(employeeData.getEmployee_id());
+
+		mailService.send(employeeData.getEmail(), "Create Verification", mailService.getLink(token));
 		ResponseDTO responseDTO = new ResponseDTO("Post Call for employee successfull..!", employeeData, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
@@ -99,6 +105,13 @@ public class EmployeePayrollController {
 	public ResponseEntity<ResponseDTO> deleteEmployee(@RequestParam(value = "token") String token , @PathVariable Long id) {
 		String employee = employeePayrollService.deleteEmployeeFromDB(token , id);
 		ResponseDTO responseDTO = new ResponseDTO("Delete Call for employee successfull..!", employee , token);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "verify/{token}")
+	public ResponseEntity<ResponseDTO> verifyEmployee(@PathVariable String token) {
+		Employee employee = employeePayrollService.EmployeeVerification(token);
+		ResponseDTO responseDTO = new ResponseDTO("Verification for employee successfull..!", employee, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 }

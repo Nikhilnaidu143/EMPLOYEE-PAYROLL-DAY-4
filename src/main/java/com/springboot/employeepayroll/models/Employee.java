@@ -37,13 +37,14 @@ public @Data class Employee {
 	private LocalDate start_date;
 	private String note;
 	private String profile_pic;
+	private String email;
+	private boolean verification;
 
 	@ElementCollection
 	@CollectionTable(name = "employee_department", joinColumns = @JoinColumn(name = "id")) // joining tables by using
-																							// ID.
 	@Column(name = "department")
 	private List<String> department;
-
+	
 	/*** Parameterized constructor. ***/
 	public Employee(EmployeeDTO employeeDTO) {
 		this.employee_name = employeeDTO.employee_name;
@@ -52,6 +53,8 @@ public @Data class Employee {
 		this.start_date = employeeDTO.start_date;
 		this.note = employeeDTO.note;
 		this.profile_pic = employeeDTO.profile_pic;
+		this.email = employeeDTO.email;
+		this.verification = false;
 		this.department = employeeDTO.department;
 	}
 
@@ -64,6 +67,8 @@ public @Data class Employee {
 		this.start_date = employeeDTO.start_date;
 		this.note = employeeDTO.note;
 		this.profile_pic = employeeDTO.profile_pic;
+		this.email = employeeDTO.email;
+		this.verification = false;
 		this.department = employeeDTO.department;
 	}
 }
