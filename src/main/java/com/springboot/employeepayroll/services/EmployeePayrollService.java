@@ -24,11 +24,11 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 
 	@Autowired
 	private TokenUtil tokenUtil;
-
-	@Autowired
-	private MailService mailService;
 	
-	private static final String MESSAGE = "User is not verified Employee...!";
+	/*** Constant custom exception messages. ***/
+	private static final String NON_VERIFIED_USER = "User is not verified Employee...!";
+	private static final String ID_NOT_FOUND = "ID not found...!";
+	private static final String INVALID_TOKEN = "Token is not valid...!";
 
 	/*** Simple hello message to check. ***/
 	@Override
@@ -36,7 +36,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long tokenId = tokenUtil.decodeToken(token);
 		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
 		if (!employeeByToken.get().isVerification()) {
-			throw new EmployeePayrollException(MESSAGE);
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 				return "Hello Nikhil...!";
 		}
@@ -48,10 +48,10 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long id = tokenUtil.decodeToken(token);
 		Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
 		if (!findEmployee.get().isVerification()) {
-			throw new EmployeePayrollException(MESSAGE);
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 			if (!findEmployee.isPresent()) {
-				throw new EmployeePayrollException("Token is not valid...!");
+				throw new EmployeePayrollException(INVALID_TOKEN);
 			} else {
 				return (List<Employee>) employeePayrollRepository.findAll();
 			}
@@ -64,11 +64,11 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long tokenId = tokenUtil.decodeToken(token); // decoding token and getting id.
 		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
 		if (!employeeByToken.get().isVerification()) {
-			throw new EmployeePayrollException(MESSAGE);
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 			if (employeeByToken.isPresent()) {
 				return employeePayrollRepository.findById(id)
-						.orElseThrow(() -> new EmployeePayrollException("ID not found...!"));
+						.orElseThrow(() -> new EmployeePayrollException(ID_NOT_FOUND));
 			} else {
 				return null;
 			}
@@ -81,10 +81,10 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long id = tokenUtil.decodeToken(token);
 		Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
 		if (!findEmployee.get().isVerification()) {
-			throw new EmployeePayrollException(MESSAGE);
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 			if (!findEmployee.isPresent()) {
-				throw new EmployeePayrollException("Token is not valid...!");
+				throw new EmployeePayrollException(INVALID_TOKEN);
 			} else {
 				return employeePayrollRepository.findEmployeesByDepartment(department);
 			}
@@ -104,15 +104,18 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Optional<Employee> employeeByToken = employeePayrollRepository.findById(tokenId);
 
 		if (!employeeByToken.get().isVerification()) {
-			mailService.send(employeeByToken.get().getEmail(), "Update Verification", mailService.getLink(token));
-			return null;
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 			Optional<Employee> findEmployee = employeePayrollRepository.findById(id);
 			if (!findEmployee.isPresent()) {
 				log.error("OOPS! Id not found in the database...!");
-				throw new EmployeePayrollException("ID not found...!");
+				throw new EmployeePayrollException(ID_NOT_FOUND);
 			} else {
-				return employeePayrollRepository.save(new Employee(id, employee));
+				Employee emp_data = new Employee(id, employee);
+				if(findEmployee.get().isVerification()) {
+					emp_data.setVerification(true);
+				}
+				return employeePayrollRepository.save(emp_data);
 			}
 		}
 	}
@@ -123,7 +126,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long tokenId = tokenUtil.decodeToken(token);
 		Optional<Employee> employee = employeePayrollRepository.findById(tokenId);
 		if (!employee.get().isVerification()) {
-			throw new EmployeePayrollException(MESSAGE);
+			throw new EmployeePayrollException(NON_VERIFIED_USER);
 		} else {
 			Optional<Employee> findEmployeeById = employeePayrollRepository.findById(id);
 			if (findEmployeeById.isPresent()) {
@@ -141,7 +144,7 @@ public class EmployeePayrollService implements IEmployeePayrollService {
 		Long tokenId = tokenUtil.decodeToken(token);
 		Optional<Employee> employee = employeePayrollRepository.findById(tokenId);
 		if (!employee.isPresent()) {
-			throw new EmployeePayrollException("ID not found...!");
+			throw new EmployeePayrollException(ID_NOT_FOUND);
 		} else {
 			employee.get().setVerification(true);
 			return employeePayrollRepository.save(employee.get());
