@@ -6,6 +6,7 @@ import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.models.Employee;
 
 public interface IEmployeePayrollService {
+	
 	/*** Declaring methods ***/
 	public String helloMessage(String token);
 	

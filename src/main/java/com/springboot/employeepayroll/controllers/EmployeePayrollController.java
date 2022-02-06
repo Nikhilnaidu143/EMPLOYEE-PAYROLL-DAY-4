@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.employeepayroll.dto.EmployeeDTO;
 import com.springboot.employeepayroll.dto.ResponseDTO;
+import com.springboot.employeepayroll.models.Email;
 import com.springboot.employeepayroll.models.Employee;
 import com.springboot.employeepayroll.services.EmployeePayrollService;
 import com.springboot.employeepayroll.services.IMailService;
@@ -39,13 +40,13 @@ public class EmployeePayrollController {
 
 	@Autowired // Autowired annotation is used for automatic injection.
 	private EmployeePayrollService employeePayrollService;
-	
+
 	@Autowired
 	private TokenUtil tokenUtil;
-	
+
 	@Autowired
 	private IMailService mailService;
-	
+
 	/*** Simple hello message for checking. ***/
 	@GetMapping(value = { "", "/", "/home" })
 	public ResponseEntity<ResponseDTO> sayHello(@RequestParam(value = "token") String token) {
@@ -58,27 +59,27 @@ public class EmployeePayrollController {
 	@GetMapping(value = "/getAll")
 	public ResponseEntity<ResponseDTO> fetchAllEmployersData(@RequestParam(value = "token") String token) {
 		List<Employee> allEmpData = employeePayrollService.fetchAllData(token);
-		ResponseDTO responseDTO = new ResponseDTO("Get All data Call successfull.", allEmpData , token);
+		ResponseDTO responseDTO = new ResponseDTO("Get All data Call successfull.", allEmpData, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	/*** get employee details by using employee ID . ***/
 	@GetMapping(value = "/get/{id}")
 	public ResponseEntity<ResponseDTO> getEmployee(@RequestParam(value = "token") String token, @PathVariable Long id) {
-		Employee employee = employeePayrollService.getEmployeeById(token , id);
-		ResponseDTO responseDTO = new ResponseDTO("Get Call for ID successfull..!", employee , token);
+		Employee employee = employeePayrollService.getEmployeeById(token, id);
+		ResponseDTO responseDTO = new ResponseDTO("Get Call for ID successfull..!", employee, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	/*** get employee details by using department. ***/
 	@GetMapping(value = "department/{department}")
-	public ResponseEntity<ResponseDTO> getEmployeeByDepartment(@PathVariable String department , 
+	public ResponseEntity<ResponseDTO> getEmployeeByDepartment(@PathVariable String department,
 			@RequestParam(value = "token") String token) {
-		List<Employee> empData = employeePayrollService.getEmployeesByDepartment(department , token);
-		ResponseDTO responseDTO = new ResponseDTO("Get By Department Call Successfull.", empData , token);
-		return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
+		List<Employee> empData = employeePayrollService.getEmployeesByDepartment(department, token);
+		ResponseDTO responseDTO = new ResponseDTO("Get By Department Call Successfull.", empData, token);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
-	
+
 	/*** Creating employee details in the database. ***/
 	@PostMapping(value = "/create")
 	public ResponseEntity<ResponseDTO> getEmployee(@Valid @RequestBody EmployeeDTO employee) {
@@ -86,28 +87,31 @@ public class EmployeePayrollController {
 		Employee employeeData = employeePayrollService.createEmployee(employee);
 		String token = tokenUtil.createToken(employeeData.getEmployee_id());
 
-		mailService.send(employeeData.getEmail(), "Create Verification", mailService.getLink(token));
+		Email email = new Email(employeeData.getEmail(), "nnikhil976@gmail.com", "Verification",
+				"Hello " + employeeData.getEmployee_name() + " ====> " + mailService.getLink(token));
+		mailService.send(email);
 		ResponseDTO responseDTO = new ResponseDTO("Post Call for employee successfull..!", employeeData, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	/*** Updating already existing employee details. ***/
 	@PutMapping("/update/{id}")
-	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee , 
-	    @RequestParam(value = "token") String token , @PathVariable Long id) {
+	public ResponseEntity<ResponseDTO> updateEmployeeByID(@Valid @RequestBody EmployeeDTO employee,
+			@RequestParam(value = "token") String token, @PathVariable Long id) {
 		Employee employeeData = employeePayrollService.updateEmployeeDetails(employee, token, id);
-		ResponseDTO responseDTO = new ResponseDTO("Put Call for employee successfull..!", employeeData , token);
+		ResponseDTO responseDTO = new ResponseDTO("Put Call for employee successfull..!", employeeData, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
 
 	/*** Delete employee details by using employee ID. ***/
 	@DeleteMapping(value = "/delete/{id}")
-	public ResponseEntity<ResponseDTO> deleteEmployee(@RequestParam(value = "token") String token , @PathVariable Long id) {
-		String employee = employeePayrollService.deleteEmployeeFromDB(token , id);
-		ResponseDTO responseDTO = new ResponseDTO("Delete Call for employee successfull..!", employee , token);
+	public ResponseEntity<ResponseDTO> deleteEmployee(@RequestParam(value = "token") String token,
+			@PathVariable Long id) {
+		String employee = employeePayrollService.deleteEmployeeFromDB(token, id);
+		ResponseDTO responseDTO = new ResponseDTO("Delete Call for employee successfull..!", employee, token);
 		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "verify/{token}")
 	public ResponseEntity<ResponseDTO> verifyEmployee(@PathVariable String token) {
 		Employee employee = employeePayrollService.EmployeeVerification(token);

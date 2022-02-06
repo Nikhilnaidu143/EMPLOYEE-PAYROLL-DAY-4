@@ -51,4 +51,5 @@ public @ToString class EmployeeDTO {
 	@NotNull(message = "Department cannot be null...!")
 	@NotEmpty(message = "Department cannot be empty...!")
 	public List<String> department; // list of departments.
+	
 }

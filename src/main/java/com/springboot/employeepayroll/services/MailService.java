@@ -13,13 +13,15 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.stereotype.Component;
 
+import com.springboot.employeepayroll.models.Email;
+
 @Component
 public class MailService implements IMailService {
 
 	// all the content of the mail is taken as parameter to this given method of the
 	// java mail service
 	@Override
-	public void send(String toEmail, String subject, String body) {
+	public void send(Email email) {
 		final String fromEmail = "nnikhil976@gmail.com";
 		// requires valid gmail id
 		final String password = "8179898350.";
@@ -45,11 +47,11 @@ public class MailService implements IMailService {
 			msg.addHeader("format", "flowed");
 			msg.addHeader("Content-Transfer-Encoding", "8bit");
 			msg.setFrom(new InternetAddress("no_reply@gmail.com", "NoReply"));
-			msg.setReplyTo(InternetAddress.parse("nnikhil976@gmail.com", false));
-			msg.setSubject(subject, "UTF-8");
-			msg.setText(body, "UTF-8");
+			msg.setReplyTo(InternetAddress.parse(email.getFrom(), false));
+			msg.setSubject(email.getSubject(), "UTF-8");
+			msg.setText(email.getBody(), "UTF-8");
 			msg.setSentDate(new Date());
-			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email.getTo(), false));
 			Transport.send(msg);
 			System.out.println("Email Sent Successfully.........");
 		} catch (Exception e) {
